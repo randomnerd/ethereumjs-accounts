@@ -2,9 +2,17 @@
 
 A simple module for creating, managing and using Ethereum accounts in browser.
 
-## About
+## About this fork
 
-This module allows the secure generation and management of Ethereum accounts in browser so that when browser stored accounts are being used by dApps, their outgoing transactions can be securly signed by the accounts stored in browser. All account data is stored in the browsers localStore and can be optionally encrypted with a passphrase using AES. If you're using Meteor.js, the Accounts object will be a reactive variable. 
+This is a fork of silentcicero:ethereum-js accounts. I have changed two elements:
+
+* Wallets do not persist in `localstorage`. They are saved to the object itself; the service should decide what to do with it from there.
+
+* The name of the variable exported to Meteor is KeyRack, not Accounts. This is to avoid conflict with the meteor accounts module. It was not named EthAccounts to avoid conflicting with `meteor-package-accounts`.
+
+##About
+
+This module allows the secure generation and management of Ethereum accounts in browser so that when browser stored accounts are being used by dApps, their outgoing transactions can be securly signed by the accounts stored in browser. All account data is stored in the browsers localStore and can be optionally encrypted with a passphrase using AES. If you're using Meteor.js, the KeyRack object will be a reactive variable.
 
 This module has been specifically designed as a transaction signer meant for use with the [HookedWeb3Provider](https://github.com/ConsenSys/hooked-web3-provider). See example below.
 
@@ -15,22 +23,22 @@ Please note that this module is still in Alpha. The security status of this modu
 ### Node.js
 
 ```
-$ npm install ethereumjs-accounts
+$ npm install git+http://git@github.com/area/ethereumjs-accounts.git
 ```
-  
+
 ### Meteor.js
 
 ```
-$ meteor add silentcicero:ethereumjs-accounts
+$ meteor add area:ethereumjs-accounts
 ```
 
 ## Usage
 
-Require the NPM module or use the standalone browserified version where the 'Accounts' object is global.
+Require the NPM module or use the standalone browserified version where the 'KeyRack' object is global.
 
 ```javascript
-var Accounts = require('ethereumjs-accounts');
-var accounts = new Accounts({minPassphraseLength: 6}); // or new Accounts(..) if using dist.
+var KeyRack = require('ethereumjs-accounts');
+var accounts = new KeyRack({minPassphraseLength: 6}); // or new KeyRack(..) if using dist.
 
 // Generate a new account encrypted with a passphrase
 var accountObject = accounts.new('myPassphrase');
@@ -74,31 +82,31 @@ web3.setProvider(provider);
 
 ## API
 
-- [`Accounts`](#accounts)
-    - [`new Accounts([options])`](#new-accounts)
-    - [`Accounts` Properties](#accounts-properties)
-        - [`Accounts.length`](#property-length) 
-    - [`Accounts` Methods](#accounts-methods)
-        - [`Accounts.new(passphrase)`](#method-new) 
-        - [`Accounts.get(address[, passphrase])`](#method-get) 
-        - [`Accounts.set(address, accountObject)`](#method-set) 
-        - [`Accounts.isPassphrase(passphrase)`](#method-isPassphrase) 
-        - [`Accounts.list()`](#method-list) 
-        - [`Accounts.remove(address)`](#method-remove) 
-        - [`Accounts.clear()`](#method-clear) 
-        - [`Accounts.contains(address)`](#method-clear) 
-        - [`Accounts.import()`](#method-import) 
-        - [`Accounts.export()`](#method-export) 
-        - [`Accounts.backup()`](#method-backup) 
-        - [`Accounts.hasAddress(address, callback)`](#hasAddress)
-        - [`Accounts.signTransaction(tx_params, callback)`](#signTransaction)
-        
+- [`KeyRack`](#accounts)
+    - [`new KeyRack([options])`](#new-accounts)
+    - [`KeyRack` Properties](#accounts-properties)
+        - [`KeyRack.length`](#property-length)
+    - [`KeyRack` Methods](#accounts-methods)
+        - [`KeyRack.new(passphrase)`](#method-new)
+        - [`KeyRack.get(address[, passphrase])`](#method-get)
+        - [`KeyRack.set(address, accountObject)`](#method-set)
+        - [`KeyRack.isPassphrase(passphrase)`](#method-isPassphrase)
+        - [`KeyRack.list()`](#method-list)
+        - [`KeyRack.remove(address)`](#method-remove)
+        - [`KeyRack.clear()`](#method-clear)
+        - [`KeyRack.contains(address)`](#method-clear)
+        - [`KeyRack.import()`](#method-import)
+        - [`KeyRack.export()`](#method-export)
+        - [`KeyRack.backup()`](#method-backup)
+        - [`KeyRack.hasAddress(address, callback)`](#hasAddress)
+        - [`KeyRack.signTransaction(tx_params, callback)`](#signTransaction)
+
 ## Browserify
 
 You may browserify ethereumjs-accounts, by installing the npm modules `npm install` and then running the browserify CMD below. Please refer to the examples to see how a standalone browserified version is setup and used.
 
 ```
-$ browserify --s Accounts index.js -o dist/ethereumjs-accounts.js
+$ browserify --s KeyRack index.js -o dist/ethereumjs-accounts.js
 ```
 
 ## Components

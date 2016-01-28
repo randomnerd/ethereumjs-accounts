@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Accounts = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.KeyRack = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function (global,Buffer){
 /**
 ethereumjs-accounts - A suite for managing Ethereum accounts in browser.
@@ -15,7 +15,7 @@ Requires:
 
 Commands:
     (Browserify)
-    browserify --s Accounts index.js -o dist/ethereumjs-accounts.js
+    browserify --s KeyRack index.js -o dist/ethereumjs-accounts.js
 
     (Run)
     node index.js
@@ -41,15 +41,15 @@ require('browserify-cryptojs/components/cipher-core');
 require('browserify-cryptojs/components/aes');
 
 /**
-The Accounts constructor method. This method will construct the in browser Ethereum accounts manager.
+The KeyRack constructor method. This method will construct the in browser Ethereum accounts manager.
 
-@class Accounts
+@class KeyRack
 @constructor
-@method (Accounts)
+@method (KeyRack)
 @param {Object} options       The accounts object options.
 **/
 
-var Accounts = module.exports = function(options){
+var KeyRack = module.exports = function(options){
     if(_.isUndefined(options))
         options = {};
 
@@ -60,6 +60,7 @@ var Accounts = module.exports = function(options){
         , requirePassphrase: false
         , selectNew: true
         , defaultGasPrice: 'useWeb3'
+        , accounts: {}
         , request: function(accountObject){
             var passphrase = prompt("Please enter your account passphrase for address " + accountObject.address.substr(0, 8) + '...', "passphrase");
 
@@ -73,15 +74,12 @@ var Accounts = module.exports = function(options){
     // build options
     this.options = _.extend(defaultOptions, options);
 
-    // define Accounts object properties
+    // define KeyRack object properties
     defineProperties(this);
 
     // get accounts object, if any
-    var accounts = LocalStore.get(this.options.varName);
+    this.accounts = this.options.accounts;
 
-    // if no accounts object exists, create one
-    if(_.isUndefined(accounts) || !_.isObject(accounts))
-        LocalStore.set(this.options.varName, {});
 };
 
 
@@ -210,7 +208,7 @@ var isAddress = function (address) {
 Define object properties such as 'length'.
 
 @method (defineProperties)
-@param {Object} context     The Accounts object context
+@param {Object} context     The KeyRack object context
 **/
 
 var defineProperties = function(context){
@@ -237,7 +235,6 @@ var defineProperties = function(context){
     });
 };
 
-
 /**
 Returns true when a valid passphrase is provided.
 
@@ -246,7 +243,7 @@ Returns true when a valid passphrase is provided.
 @return {Boolean} Whether the passphrase is valid or invalid.
 **/
 
-Accounts.prototype.isPassphrase = function(passphrase){
+KeyRack.prototype.isPassphrase = function(passphrase){
     if(!_.isUndefined(passphrase)
        && _.isString(passphrase)
        && !_.isEmpty(passphrase)
@@ -263,9 +260,8 @@ This will set in browser accounts data at a specified address with the specified
 @param {Object} accountObject    The account object data.
 **/
 
-Accounts.prototype.set = function(address, accountObject){
-    var accounts = LocalStore.get('ethereumAccounts');
-
+KeyRack.prototype.set = function(address, accountObject){
+    var accounts = this.accounts;
     // if object, store; if null, delete
     if(_.isObject(accountObject))
         accounts[formatAddress(address)] = accountObject;
@@ -273,8 +269,6 @@ Accounts.prototype.set = function(address, accountObject){
         delete accounts[formatAddress(address)];
 
     this.log('Setting account object at address: ' + address + ' to account object ' + String(accountObject));
-
-    LocalStore.set(this.options.varName, accounts);
 };
 
 
@@ -285,7 +279,7 @@ Remove an account from the Ethereum accounts stored in browser
 @param {String} address          The address of the account stored in browser
 **/
 
-Accounts.prototype.remove = function(address){
+KeyRack.prototype.remove = function(address){
     this.set(address, null);
 };
 
@@ -298,7 +292,7 @@ Generate a new Ethereum account in browser with a passphrase that will encrypt t
 @return {Object} an account object with the public and private keys included.
 **/
 
-Accounts.prototype.new = function(passphrase){
+KeyRack.prototype.new = function(passphrase){
     var private = new Buffer(randomBytes(64), 'hex');
     var public = ethUtil.privateToPublic(private);
     var address = formatAddress(ethUtil.publicToAddress(public)
@@ -354,14 +348,12 @@ Select the account that will be used when transactions are made.
 @param {String} address          The address of the account to select
 **/
 
-Accounts.prototype.select = function(address) {
-    var accounts = LocalStore.get(this.options.varName);
+KeyRack.prototype.select = function(address) {
 
     //if(!this.contains(address))
     //    return;
 
-    accounts['selected'] = address;
-    LocalStore.set(this.options.varName, accounts);
+    this.accounts['selected'] = address;
 };
 
 
@@ -373,9 +365,8 @@ Get an account object that is stored in local browser storage. If encrypted, dec
 @return {Object} an account object with the public and private keys included.
 **/
 
-Accounts.prototype.get = function(address, passphrase){
-    var accounts = LocalStore.get(this.options.varName);
-
+KeyRack.prototype.get = function(address, passphrase){
+    var accounts = this.accounts;
     if(_.isUndefined(address) || _.isEmpty(address))
         return accounts;
 
@@ -390,7 +381,7 @@ Accounts.prototype.get = function(address, passphrase){
     if(!this.contains(address))
         return accountObject;
 
-    accountObject = accounts[address];
+    accountObject = JSON.parse(JSON.stringify(accounts[address]));
 
     if(_.isEmpty(accountObject))
         return accountObject;
@@ -422,9 +413,9 @@ Clear all stored Ethereum accounts in browser.
 @method (clear)
 **/
 
-Accounts.prototype.clear = function(){
+KeyRack.prototype.clear = function(){
     this.log('Clearing all accounts');
-    LocalStore.set(this.options.varName, {});
+    this.accounts = {};
 };
 
 
@@ -436,13 +427,11 @@ Does the account exist in browser storage, given the specified account address.
 @return {Boolean} Does the account exists or not given the specified address
 **/
 
-Accounts.prototype.contains = function(address){
-    var accounts = LocalStore.get(this.options.varName);
-
+KeyRack.prototype.contains = function(address){
+    var accounts = this.accounts;
     if(_.isUndefined(address)
        || _.isEmpty(address))
         return false;
-
     // Add '0x' prefix if not available
     address = formatAddress(address);
 
@@ -461,7 +450,7 @@ Export the accounts to a JSON ready string.
 @return {String} A JSON ready string
 **/
 
-Accounts.prototype.export = function(){
+KeyRack.prototype.export = function(){
     this.log('Exported accounts');
 
     return JSON.stringify(this.get());
@@ -476,7 +465,7 @@ Import a JSON ready string. This will import JSON data, parse it, and attempt to
 @return {String} How many accountObject's were added
 **/
 
-Accounts.prototype.import = function(JSON_data){
+KeyRack.prototype.import = function(JSON_data){
     var JSON_data = JSON_data.trim();
     var parsed = JSON.parse(JSON_data);
     var count = 0;
@@ -506,7 +495,7 @@ Backup your accounts in a zip file.
 @method (backup)
 **/
 
-Accounts.prototype.backup = function(){
+KeyRack.prototype.backup = function(){
     var zip = new JSZip();
     zip.file("wallet", this.export());
     var content = zip.generate({type:"blob"});
@@ -522,7 +511,7 @@ A log function that will log all actions that occur with ethereumjs-accounts.
 @method (log)
 **/
 
-Accounts.prototype.log = function(){};
+KeyRack.prototype.log = function(){};
 
 
 /**
@@ -532,8 +521,8 @@ Return all accounts as a list array.
 @return {Array} a list array of all accounts
 **/
 
-Accounts.prototype.list = function(){
-    var accounts = LocalStore.get('ethereumAccounts'),
+KeyRack.prototype.list = function(){
+    var accounts = this.accounts,
         return_array = [];
 
     _.each(_.keys(accounts), function(accountKey, accountIndex){
@@ -554,7 +543,7 @@ the HookedWeb3Provider.
 @method (hasAddress)
 **/
 
-Accounts.prototype.hasAddress = function(address, callback) {
+KeyRack.prototype.hasAddress = function(address, callback) {
   callback(null, this.contains(address));
 }
 
@@ -572,10 +561,10 @@ and start with the prefix "0x". nonce is required.
 
 @method (signTransaction)
 **/
-Accounts.prototype.signTransaction = function(tx_params, callback) {
+KeyRack.prototype.signTransaction = function(tx_params, callback) {
     // Accounts instance
     var accounts = this;
-
+    
     // if from is an account is not stored in browser, error because we can't
     // sign the transaction.
     if(!accounts.contains(tx_params.from)) {
@@ -617,7 +606,7 @@ Accounts.prototype.signTransaction = function(tx_params, callback) {
 
     if(tx_params.data != null)
         rawTx.data = formatHex(ethUtil.stripHexPrefix(tx_params.data));
-
+    
     // convert string private key to a Buffer Object
     var privateKey = new Buffer(account.private, 'hex');
     
