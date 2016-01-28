@@ -8,9 +8,9 @@ This is a fork of silentcicero:ethereum-js accounts. I have changed two elements
 
 * Wallets do not persist in `localstorage`. They are saved to the object itself; the service should decide what to do with it from there.
 
-* The name of the variable exported to Meteor is KeyRack, not Accounts. This is to avoid conflict with the meteor accounts module. It was not named EthAccounts to avoid conflicting with `meteor-package-accounts`.
+* The name of the variable exported to Meteor is `KeyRack`, not `Accounts`. This is to avoid conflict with the meteor accounts module. It was not named EthAccounts to avoid conflicting with `meteor-package-accounts`.
 
-##About
+## About
 
 This module allows the secure generation and management of Ethereum accounts in browser so that when browser stored accounts are being used by dApps, their outgoing transactions can be securly signed by the accounts stored in browser. All account data is stored in the browsers localStore and can be optionally encrypted with a passphrase using AES. If you're using Meteor.js, the KeyRack object will be a reactive variable.
 
