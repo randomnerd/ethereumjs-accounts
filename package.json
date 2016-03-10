@@ -1,6 +1,6 @@
 {
   "name": "ethereumjs-accounts",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "A simple module for creating and managing ethereum accounts in browser.",
   "main": "index.js",
   "scripts": {
@@ -8,24 +8,24 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/SilentCicero/ethereumjs-accounts"
+    "url": "http://github.com/randomnerd/ethereumjs-accounts"
   },
   "keywords": [
     "web3",
     "ethereum",
     "accounts"
   ],
-  "author": "Nick Dodson",
+  "author": "randomnerd",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/SilentCicero/ethereumjs-accounts/issues"
+    "url": "https://github.com/randomnerd/ethereumjs-accounts/issues"
   },
   "dependencies": {
-    "bignumber.js": "^2.0.7",
+    "bignumber.js": "^2.3.0",
     "browserify-cryptojs": "^0.3.1",
-    "ethereumjs-tx": "^0.4.0",
+    "ethereumjs-tx": "^1.1.1",
     "jszip": "^2.5.0",
-    "localstorejs": "^0.1.9",
+    "localstoragejs": "^0.1.6",
     "node-safe-filesaver": "^0.1.0",
     "underscore": "^1.8.3"
   }
